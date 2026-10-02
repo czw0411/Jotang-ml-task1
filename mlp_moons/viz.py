@@ -163,10 +163,10 @@ def plot_ablation_bars(stats_list: list[dict], path: str | Path, title: str,
     x = np.arange(len(names))
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.6))
-    for ax, data, ylabel, color in [
-        (axes[0], vals, metric.replace("_", " "), "#2E6FD9"),
-        (axes[1], times, "ms / epoch", "#E4572E"),
-        (axes[2], params, "# parameters", "#1B9E77"),
+    for ax, data, ylabel, color, fmt in [
+        (axes[0], vals, metric.replace("_", " "), "#2E6FD9", "{:.4f}"),
+        (axes[1], times, "ms / epoch", "#E4572E", "{:,.1f}"),
+        (axes[2], params, "# parameters", "#1B9E77", "{:,.0f}"),
     ]:
         bars = ax.bar(x, data, color=color, alpha=0.85)
         ax.set_xticks(x)
@@ -175,7 +175,7 @@ def plot_ablation_bars(stats_list: list[dict], path: str | Path, title: str,
         ax.grid(alpha=0.25, axis="y")
         for b, v in zip(bars, data):
             ax.annotate(
-                f"{v:.3f}" if ylabel.endswith("accuracy") else f"{v:,.0f}",
+                fmt.format(v),
                 (b.get_x() + b.get_width() / 2, b.get_height()),
                 ha="center",
                 va="bottom",
