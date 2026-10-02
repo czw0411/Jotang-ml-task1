@@ -2,7 +2,16 @@
 
 `torch 2.14.1+cpu` | `scikit-learn 1.9.1` | Python 3.12 | CPU 16 线程，无 CUDA | 种子 42
 
-运行：`pip install -r requirements.txt && python run_all.py`
+## 运行方法
+
+```bash
+pip install -r requirements.txt
+
+python run_all.py                                # 全部实验（CPU 约 107 s）
+python run_all.py --steps baseline               # 只跑 baseline
+python run_all.py --ablation-groups width,depth  # 只跑指定的对照分组
+python scripts/measure_resources.py              # 独立子进程测量内存与耗时
+```
 
 ---
 
@@ -106,6 +115,7 @@ optimizer.step()                     # 用梯度更新参数
 
 ![宽度](outputs/figures/ablation_width_curves.png)
 ![宽度边界](outputs/figures/ablation_width_boundary.png)
+![宽度柱状](outputs/figures/ablation_width_bars.png)
 
 结果变化：参数从 42 增到 67074（1600 倍），耗时 +136%，测试准确率在 97.7%~99.0% 内波动，落在种子噪声内。
 
@@ -119,6 +129,7 @@ optimizer.step()                     # 用梯度更新参数
 
 ![深度](outputs/figures/ablation_depth_curves.png)
 ![深度边界](outputs/figures/ablation_depth_boundary.png)
+![深度柱状](outputs/figures/ablation_depth_bars.png)
 
 结果变化：1 层已经足够，加到 4 层参数 ×2.9、耗时 +45%，测试准确率无提升。
 
@@ -140,6 +151,8 @@ optimizer.step()                     # 用梯度更新参数
 
 ![激活函数](outputs/figures/ablation_activation_curves.png)
 ![激活函数-深层](outputs/figures/ablation_activation_deep_curves.png)
+![激活函数柱状](outputs/figures/ablation_activation_bars.png)
+![激活函数柱状-深层](outputs/figures/ablation_activation_deep_bars.png)
 
 结果变化：最终测试准确率 96.3%~99.0%，差异都在种子噪声内；2 层时收敛速度差异明显（gelu 第 4 epoch / sigmoid 第 73 epoch 达到 best val），但换到 4 层后顺序改变（gelu 46、sigmoid 111、tanh 165、relu 193）。计算开销上`gelu`比`relu`约慢 6%。
 
@@ -153,6 +166,7 @@ optimizer.step()                     # 用梯度更新参数
 | lr=1e-1 | 11.5 | **0.9422** | 0.9200 | **0.9400** | 60 |
 
 ![学习率](outputs/figures/ablation_lr_curves.png)
+![学习率柱状](outputs/figures/ablation_lr_bars.png)
 
 结果变化：`1e-4`在 200 epoch 时仍在爬升（best val 出现在第 194 epoch，欠拟合）；`1e-1`的 loss 曲线剧烈震荡，训练准确率四项最低（0.9422），测试掉到 0.9400。
 
@@ -166,6 +180,7 @@ optimizer.step()                     # 用梯度更新参数
 | rmsprop | 7.9 | 0.9700 | 0.9533 | 0.9767 |
 
 ![优化器](outputs/figures/ablation_optimizer_curves.png)
+![优化器柱状](outputs/figures/ablation_optimizer_bars.png)
 
 结果变化：裸 SGD 明显落后（0.9700），加动量后追平 Adam；Adam 单步最慢（维护一阶/二阶动量），但收敛需要的 epoch 更少。
 
@@ -179,6 +194,7 @@ optimizer.step()                     # 用梯度更新参数
 | bs=900 (全批量) | 1.0 | 0.9700 | 0.9700 | 0.9833 |
 
 ![batch size](outputs/figures/ablation_batch_bars.png)
+![batch size 曲线](outputs/figures/ablation_batch_curves.png)
 
 结果变化：准确率几乎不变，但速度差 36 倍（37.7 → 1.0 ms/epoch）。
 
@@ -194,6 +210,7 @@ optimizer.step()                     # 用梯度更新参数
 
 ![噪声](outputs/figures/ablation_noise_curves.png)
 ![噪声边界](outputs/figures/ablation_noise_boundary.png)
+![噪声柱状](outputs/figures/ablation_noise_bars.png)
 
 结果变化：准确率随噪声单调下降，100% → 85.0%。这一项的影响远大于网络结构。
 
